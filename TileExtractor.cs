@@ -7,15 +7,19 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO.IsolatedStorage;
+using System.Diagnostics;
 
 namespace Wavefunction_Collapse
 {
     public static class TileExtractor
     {
         private static int nPixel = 4; // Pixel Height and Size in one tile.
+        private static int tilePixelsAmounts = nPixel * nPixel;
         private static int tileNumber = 64;
         private static int tileGrid = 8;
         private static GraphicsDevice graphicsDevice;
+        public  enum Direction { UP, RIGHT, DOWN, LEFT };
+        public static Direction direction = Direction.UP;
         public static GraphicsDevice GP(GraphicsDevice graphDevice) => graphicsDevice = graphDevice;
         public static Texture2D[] ExtractIMGArray(Texture2D Texture)
         {
@@ -42,7 +46,7 @@ namespace Wavefunction_Collapse
         public static Texture2D ExtractOneTile(Texture2D Texture, int multiX, int multiY)
         {
 
-            Color[] tilePixels = new Color[nPixel * nPixel];
+            Color[] tilePixels = new Color[tilePixelsAmounts];
             Color[] sourcePixels = new Color[Texture.Width * Texture.Height];
            
             Texture.GetData(sourcePixels);
@@ -53,14 +57,19 @@ namespace Wavefunction_Collapse
                     int tileIndex = x + y * nPixel;
                     int sourceIndex = (multiX + x) + (multiY + y) * Texture.Width;
 
-
                     tilePixels[tileIndex] = sourcePixels[sourceIndex];
-
+                    Debug.WriteLine(sourceIndex);
                 }
             }
             Texture2D tex = new Texture2D(graphicsDevice, nPixel, nPixel);
             tex.SetData(tilePixels);
             return tex;
+        }
+
+        public static Tile[] FindOptions()
+        {
+
+
         }
 
 

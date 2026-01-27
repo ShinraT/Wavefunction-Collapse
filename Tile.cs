@@ -14,14 +14,12 @@ namespace Wavefunction_Collapse
         private Texture2D tex;
         private int ID;
         private Rectangle drawingRec;
-        
-
+        private Tile[] options;
 
         public Tile(Texture2D tex, int ID)
         {
             this.tex = tex;
             this.ID = ID;
-
         }
 
         

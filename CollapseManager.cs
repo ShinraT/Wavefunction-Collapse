@@ -4,6 +4,8 @@ using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Drawing.Text;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -18,11 +20,11 @@ namespace Wavefunction_Collapse
      
        
         private Random rnd = new Random();
-        private int cellSize = 30;
+        private int cellSize = 80;
         private int gridXOffset = 150;
-        private int gridYOffset = 5;
-        private int gridSize = 32;
-        private int cellsPerRowColumn = 32;
+        private int gridYOffset = 100;
+        private int gridSize = 8;
+        private int cellsPerRowColumn = 8;
         private Texture2D[] texArray;
         public CollapseManager(Viewport vP)
         {
@@ -31,6 +33,7 @@ namespace Wavefunction_Collapse
             CreateCells();
             texArray = TileExtractor.ExtractIMGArray(AssetManager.testTex);
             LoadCellTextures();
+            PrintCellCount();
         }
 
         private void CalcCelllSizeAndGridSize()
@@ -67,21 +70,31 @@ namespace Wavefunction_Collapse
 
         }
 
+        private void PrintCellCount()
+        {
+            Debug.WriteLine(cells.Length);
+
+        }
+
 
         public void Update(GameTime gT)
         {
 
             if(KeyMouseReader.LeftClick())
             CheckIfMouseHoverCell();
+           
         }
 
         private void LoadCellTextures()
         {
+            int index = 0;
             for(int y = 0; y < cells.GetLength(0); y++)
             {
-                for(int  x = 0; x < cells.GetLength(0); x++)
+                for(int  x = 0; x < cells.GetLength(1); x++)
                 {
-                    cells[y, x].Tex(texArray[x]);
+                    
+                    cells[x, y].Tex(texArray[index]);
+                    index++;
                 }
             }
         } 
@@ -94,7 +107,7 @@ namespace Wavefunction_Collapse
         {
             DrawCells(sB);
 
-
+            //cells[4,4].Draw(sB);
 
         }
 
