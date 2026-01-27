@@ -25,15 +25,17 @@ namespace Wavefunction_Collapse
         private int gridYOffset = 100;
         private int gridSize = 8;
         private int cellsPerRowColumn = 8;
-        private Texture2D[] texArray;
+        private Tile[] tileArray;
+        private List<Cell> cellTestList = new List<Cell>();
         public CollapseManager(Viewport vP)
         {
             this.vP = vP;
             CalcCelllSizeAndGridSize();
             CreateCells();
-            texArray = TileExtractor.ExtractIMGArray(AssetManager.testTex);
+            tileArray = TileExtractor.ExtractIMGArray(AssetManager.testTex);
             LoadCellTextures();
             PrintCellCount();
+            LoadAllNeighBors();
         }
 
         private void CalcCelllSizeAndGridSize()
@@ -70,6 +72,22 @@ namespace Wavefunction_Collapse
 
         }
 
+        public void LoadAllNeighBors(/*SpriteBatch sB*/)
+        {
+            int id = 0; // Lämnar det här. Försöker rita up rätt neighbors. Laddar upp till github. 
+            List<Tile> options = new List<Tile>();
+            options = tileArray[30].ReturnAllNeighbors();
+            Cell[,] cells = new Cell[options.Count, options.Count]; // Denna raden kommer att fucka ur det helt. 
+            for(int x  = 0; x < cells.Length; x++)
+            {                
+                Cell cell = new Cell(new Rectangle(x * cellSize, x * cellSize , cellSize, cellSize), id, options[x].Tex);
+                id++;
+                cellTestList.Add(cell);
+                Debug.WriteLine("Added a new cell");
+            }
+
+        }
+
         private void PrintCellCount()
         {
             Debug.WriteLine(cells.Length);
@@ -93,7 +111,7 @@ namespace Wavefunction_Collapse
                 for(int  x = 0; x < cells.GetLength(1); x++)
                 {
                     
-                    cells[x, y].Tex(texArray[index]);
+                    cells[x, y].Tex(tileArray[index].Tex);
                     index++;
                 }
             }
@@ -105,8 +123,14 @@ namespace Wavefunction_Collapse
 
         public void Draw(SpriteBatch sB)
         {
-            DrawCells(sB);
-
+            //DrawCells(sB);
+            if(cellTestList != null)
+            {
+                foreach (Cell cell in cellTestList) ;
+            }
+              
+            
+          
             //cells[4,4].Draw(sB);
 
         }

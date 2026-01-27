@@ -8,6 +8,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO.IsolatedStorage;
 using System.Diagnostics;
+using System.ComponentModel;
+using System.Security.Policy;
 
 namespace Wavefunction_Collapse
 {
@@ -18,13 +20,11 @@ namespace Wavefunction_Collapse
         private static int tileNumber = 64;
         private static int tileGrid = 8;
         private static GraphicsDevice graphicsDevice;
-        public  enum Direction { UP, RIGHT, DOWN, LEFT };
-        public static Direction direction = Direction.UP;
         public static GraphicsDevice GP(GraphicsDevice graphDevice) => graphicsDevice = graphDevice;
-        public static Texture2D[] ExtractIMGArray(Texture2D Texture)
+        public static Tile[] ExtractIMGArray(Texture2D Texture)
         {
             Texture2D tex = Texture;
-            Texture2D[] texArray = new Texture2D[tileNumber];
+            Tile[] tileArray = new Tile[tileNumber];
             int index = 0;
             int xMulti = 0;
             int yMulti = 0;
@@ -34,16 +34,24 @@ namespace Wavefunction_Collapse
                 {
                     xMulti = x* nPixel;
                     yMulti = y* nPixel;
-                    texArray[index] = ExtractOneTile(tex, xMulti, yMulti);
+                    tileArray[index] = ExtractOneTile(tex, xMulti, yMulti, index);
                     index++;
-
                 }
 
             }
-            return texArray;
+
+            foreach(Tile tile in tileArray) // Add all right neighbor options for all tiles.
+            {
+                for(int x = 0;x < tileArray.Length; x++)
+                {
+                    if (FindRightNeigbor(tile, tileArray[x]))
+                        tile.AddOption(tileArray[x]);
+                }
+            }
+            return tileArray;
         }
 
-        public static Texture2D ExtractOneTile(Texture2D Texture, int multiX, int multiY)
+        public static Tile ExtractOneTile(Texture2D Texture, int multiX, int multiY, int ID)
         {
 
             Color[] tilePixels = new Color[tilePixelsAmounts];
@@ -63,19 +71,35 @@ namespace Wavefunction_Collapse
             }
             Texture2D tex = new Texture2D(graphicsDevice, nPixel, nPixel);
             tex.SetData(tilePixels);
-            return tex;
+            Tile tile = new Tile(tex, ID);
+            return tile;
         }
 
-        public static Tile[] FindOptions()
+        //public static Tile[] FindOptions()
+        //{
+
+        //}
+
+        public static bool FindRightNeigbor(Tile sourceTile, Tile comparisonTile)
         {
-
-
+            int depth = 2;
+            Texture2D tex = sourceTile.Tex;
+            Texture2D compTex = comparisonTile.Tex;
+            Color[] sourceColors = new Color[tex.Width * tex.Height];
+            Color[] compColors = new Color[comparisonTile.Tex.Width * comparisonTile.Tex.Height];
+            tex.GetData(sourceColors);
+            compTex.GetData(compColors);
+            for(int y = 0; y < nPixel; y++)
+            {
+                for(int x = 0;x < depth; x++)
+                {
+                    int srcIndex = ((nPixel - depth) + x) + (y *nPixel); // 2, 3mm  
+                    int compIndex = x + y * nPixel;  // 0, 1, 4, 5, 
+                    if (sourceColors[srcIndex] != compColors[compIndex])
+                        return false;
+                }
+            }
+            return true;
         }
-
-
-
-
-
-
     }
 }

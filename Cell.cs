@@ -17,6 +17,7 @@ namespace Wavefunction_Collapse
         int id;
         public int ID => id;
         private bool collapsed;
+        
         public Texture2D Tex(Texture2D texture) => tex = texture;
         public Cell(Rectangle destRect, int id, Texture2D tex)
         {
@@ -28,7 +29,7 @@ namespace Wavefunction_Collapse
         private void DrawID(SpriteBatch sB)
         {
             //sB.DrawString(AssetManager.spriteFont, $"{id}", new Vector2(bounds.Left +2,bounds.Center.Y), Color.Red);
-            //sB.Draw(AssetManager.gridTex, bounds, Color.White);
+            sB.Draw(AssetManager.gridTex, bounds, Color.White);
 
         }
 
