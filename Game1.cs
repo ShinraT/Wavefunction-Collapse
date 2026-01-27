@@ -37,7 +37,7 @@ namespace Wavefunction_Collapse
             TileExtractor.GP(GraphicsDevice);
             // TODO: use this.Content to load your game content here
             cP = new CollapseManager(GraphicsDevice.Viewport);
-            cell = new Cell(new Rectangle(0, 0, 120, 120), 1337);
+            //cell = new Cell(new Rectangle(0, 0, 120, 120), 1337);
           
         }
 
@@ -58,7 +58,7 @@ namespace Wavefunction_Collapse
             GraphicsDevice.Clear(Color.Black);
             spriteBatch.Begin(SpriteSortMode.Deferred,BlendState.AlphaBlend,SamplerState.PointClamp,DepthStencilState.None,RasterizerState.CullNone);
             cP.Draw(spriteBatch);
-            cell.Draw(spriteBatch);
+            //cell.Draw(spriteBatch);
             spriteBatch.End();
             // TODO: Add your drawing code here
 

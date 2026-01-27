@@ -13,25 +13,33 @@ namespace Wavefunction_Collapse
     public static class TileExtractor
     {
         private static int nPixel = 4; // Pixel Height and Size in one tile.
-        private static Texture2D[] texArray;
+        private static int tileNumber = 64;
+        private static int tileGrid = 8;
         private static GraphicsDevice graphicsDevice;
         public static GraphicsDevice GP(GraphicsDevice graphDevice) => graphicsDevice = graphDevice;
-        //public static Texture2D ExtractIMGArray(Texture2D Texture)
-        //{
-        //    Texture2D tex = Texture;
-        //    texArray = new Texture2D[nPixel * nPixel * nPixel];
-        //    for(int y = 0; y <Texture.Height; y++)
-        //    {
-        //        for(int x = 0; x <Texture.Width; x++)
-        //        {
+        public static Texture2D[] ExtractIMGArray(Texture2D Texture)
+        {
+            Texture2D tex = Texture;
+            Texture2D[] texArray = new Texture2D[tileNumber];
+            int index = 0;
+            int xMulti = 0;
+            int yMulti = 0;
+            for (int y = 0; y < tileGrid; y++)
+            {
+                for (int x = 0; x < tileGrid; x++)
+                {
+                    xMulti = x* nPixel;
+                    yMulti = y* nPixel;
+                    texArray[index] = ExtractOneTile(tex, xMulti, yMulti);
+                    index++;
 
-        //        }
+                }
 
-                        
-        //    }
-        //}
+            }
+            return texArray;
+        }
 
-        public static Texture2D ExtractOneTile(Texture2D Texture)
+        public static Texture2D ExtractOneTile(Texture2D Texture, int multiX, int multiY)
         {
 
             Color[] tilePixels = new Color[nPixel * nPixel];
@@ -43,7 +51,7 @@ namespace Wavefunction_Collapse
                 for(int x = 0; x < nPixel; x++)
                 {
                     int tileIndex = x + y * nPixel;
-                    int sourceIndex = x + y * Texture.Width;
+                    int sourceIndex = (multiX + x) + (multiY + y) * Texture.Width;
 
 
                     tilePixels[tileIndex] = sourcePixels[sourceIndex];

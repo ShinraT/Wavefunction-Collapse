@@ -15,19 +15,18 @@ namespace Wavefunction_Collapse
         private Vector2 position;
         private Texture2D tex;
         int id;
-        public Cell(Rectangle destRect, int id)
+        public Texture2D Tex(Texture2D texture) => tex = texture;
+        public Cell(Rectangle destRect, int id, Texture2D tex)
         {
             this.id = id;
-            //tex = AssetManager.dungonMapTex;
-            tex = AssetManager.testTex;
-            tex = TileExtractor.ExtractOneTile(tex);
+            this.tex = tex;
             this.bounds = destRect;
             this.position = new Vector2(this.bounds.X, this.bounds.Y);
         }
 
         private void DrawID(SpriteBatch sB)
         {
-            sB.DrawString(AssetManager.spriteFont, $"{id}", new Vector2(bounds.Left +2,bounds.Center.Y), Color.Green);
+            sB.DrawString(AssetManager.spriteFont, $"{id}", new Vector2(bounds.Left +2,bounds.Center.Y), Color.Red);
 
         }
 

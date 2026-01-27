@@ -18,20 +18,25 @@ namespace Wavefunction_Collapse
      
        
         private Random rnd = new Random();
-        private int cellSize;
-        private int gridSize;
+        private int cellSize = 30;
+        private int gridXOffset = 150;
+        private int gridYOffset = 5;
+        private int gridSize = 32;
         private int cellsPerRowColumn = 32;
+        private Texture2D[] texArray;
         public CollapseManager(Viewport vP)
         {
             this.vP = vP;
             CalcCelllSizeAndGridSize();
             CreateCells();
+            texArray = TileExtractor.ExtractIMGArray(AssetManager.testTex);
+            LoadCellTextures();
         }
 
         private void CalcCelllSizeAndGridSize()
         {
-            cellSize = vP.Width / cellsPerRowColumn;
-            gridSize = vP.Width / cellSize;
+            //cellSize = vP.Width / cellsPerRowColumn;
+            //gridSize = vP.Width / cellSize;
         }
 
        
@@ -70,14 +75,25 @@ namespace Wavefunction_Collapse
             CheckIfMouseHoverCell();
         }
 
+        private void LoadCellTextures()
+        {
+            for(int y = 0; y < cells.GetLength(0); y++)
+            {
+                for(int  x = 0; x < cells.GetLength(0); x++)
+                {
+                    cells[y, x].Tex(texArray[x]);
+                }
+            }
+        } 
+
 
         
 
 
         public void Draw(SpriteBatch sB)
         {
-            //DrawCells(sB);
-            
+            DrawCells(sB);
+
 
 
         }
@@ -94,7 +110,8 @@ namespace Wavefunction_Collapse
             {
                 for (int x = 0; x < cells.GetLength(1); x++)
                 {
-                    Cell c = new Cell(new Rectangle(x * cellSize, y * cellSize, cellSize, cellSize), ID);
+                    //Texture2D tex = TileExtractor.ExtractOneTile(AssetManager.testTex);
+                    Cell c = new Cell(new Rectangle(x * cellSize + gridXOffset, y * cellSize + gridYOffset, cellSize, cellSize), ID, AssetManager.gridTex/*tex*/);
                     cells[x, y] = c;
                     ID++;
                 }
