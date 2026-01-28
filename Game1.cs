@@ -34,7 +34,7 @@ namespace Wavefunction_Collapse
         {
             spriteBatch = new SpriteBatch(GraphicsDevice);
             AssetManager.LoadTextures(Content, GraphicsDevice);
-            TileExtractor.GP(GraphicsDevice);
+            WFCRuleSet.GP(GraphicsDevice);
             // TODO: use this.Content to load your game content here
             cP = new CollapseManager(GraphicsDevice.Viewport);
             //cell = new Cell(new Rectangle(0, 0, 120, 120), 1337);

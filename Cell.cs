@@ -14,6 +14,7 @@ namespace Wavefunction_Collapse
         private Rectangle bounds;
 
         private Texture2D tex;
+        //public Texture2D Tex { get {  return tex; } set { tex = value; } }
         int id;
         public int ID => id;
         private bool collapsed;
@@ -26,7 +27,7 @@ namespace Wavefunction_Collapse
             this.bounds = destRect;
         }
 
-        private void DrawID(SpriteBatch sB)
+        private void DrawBoundsAndID(SpriteBatch sB)
         {
             //sB.DrawString(AssetManager.spriteFont, $"{id}", new Vector2(bounds.Left +2,bounds.Center.Y), Color.Red);
             sB.Draw(AssetManager.gridTex, bounds, Color.White);
@@ -39,7 +40,7 @@ namespace Wavefunction_Collapse
         public void Draw(SpriteBatch sB)
         {
             sB.Draw(tex, bounds, Color.White);
-            DrawID(sB);
+            //DrawBoundsAndID(sB);
         }
 
     }

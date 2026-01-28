@@ -15,8 +15,12 @@ namespace Wavefunction_Collapse
         public Texture2D Tex => tex;
         private int ID;
         private Rectangle drawingRec;
-        //private Tile[] options;
+        private enum Direction { NORTH = 0, EAST = 1, SOUTH = 2, WEST = 3 }
+        private Tile[][][] tileOptions;
         private List<Tile> options;
+        public List<Tile> Options => options;
+        private int weight;
+        public int Weight => weight;
 
         public Tile(Texture2D tex, int ID)
         {

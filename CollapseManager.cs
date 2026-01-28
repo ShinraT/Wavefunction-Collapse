@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing.Text;
 using System.Linq;
@@ -32,10 +33,10 @@ namespace Wavefunction_Collapse
             this.vP = vP;
             CalcCelllSizeAndGridSize();
             CreateCells();
-            tileArray = TileExtractor.ExtractIMGArray(AssetManager.testTex);
+            tileArray = WFCRuleSet.ExtractIMGArray(AssetManager.testTex);
             LoadCellTextures();
             PrintCellCount();
-            LoadAllNeighBors();
+            //LoadAllNeighBors();
         }
 
         private void CalcCelllSizeAndGridSize()
@@ -72,19 +73,25 @@ namespace Wavefunction_Collapse
 
         }
 
-        public void LoadAllNeighBors(/*SpriteBatch sB*/)
+        public void LoadCellsTextures(/*SpriteBatch sB*/)
         {
-            int id = 0; // Lämnar det här. Försöker rita up rätt neighbors. Laddar upp till github. 
-            List<Tile> options = new List<Tile>();
-            options = tileArray[30].ReturnAllNeighbors();
-            Cell[,] cells = new Cell[options.Count, options.Count]; // Denna raden kommer att fucka ur det helt. 
-            for(int x  = 0; x < cells.Length; x++)
-            {                
-                Cell cell = new Cell(new Rectangle(x * cellSize, x * cellSize , cellSize, cellSize), id, options[x].Tex);
-                id++;
-                cellTestList.Add(cell);
-                Debug.WriteLine("Added a new cell");
+            Random rnd = new Random();
+            int optionsCount = tileArray[2].Options.Count;
+            List<Tile> tiles = new List<Tile>();
+            tiles = tileArray[2].ReturnAllNeighbors();
+            List<Texture2D> textures = new List<Texture2D>();
+            foreach(Tile t in tiles)
+            {
+                textures.Add(t.Tex);
             }
+            
+            foreach (Cell c in cells)
+            {
+                c.Tex(textures[rnd.Next(0, textures.Count )]);
+            }
+            Debug.WriteLine( $"Options Count = {optionsCount}");
+            
+           
 
         }
 
@@ -97,9 +104,9 @@ namespace Wavefunction_Collapse
 
         public void Update(GameTime gT)
         {
-
-            if(KeyMouseReader.LeftClick())
-            CheckIfMouseHoverCell();
+            if(KeyMouseReader.KeyPressed(Keys.Space))
+            LoadCellsTextures();
+           
            
         }
 
@@ -123,11 +130,12 @@ namespace Wavefunction_Collapse
 
         public void Draw(SpriteBatch sB)
         {
-            //DrawCells(sB);
+            DrawCells(sB);
             if(cellTestList != null)
             {
                 foreach (Cell cell in cellTestList) ;
             }
+           
               
             
           
@@ -137,7 +145,11 @@ namespace Wavefunction_Collapse
 
         private void DrawCells(SpriteBatch Sb) // Draws all the cells
         {
-            foreach(Cell c in cells)c.Draw(Sb);
+            if (cells != null)
+            {
+                foreach (Cell c in cells) c.Draw(Sb);
+            }
+            
         }
         private void CreateCells()
         {
