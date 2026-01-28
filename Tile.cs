@@ -13,50 +13,24 @@ namespace Wavefunction_Collapse
     {
         private Texture2D tex;
         public Texture2D Tex => tex;
-        private int ID;
+        private int id;
+        public int ID => id;
         private Rectangle drawingRec;
         private enum Direction { NORTH = 0, EAST = 1, SOUTH = 2, WEST = 3 }
         private Tile[][][] tileOptions;
         private List<Tile> options;
         public List<Tile> Options => options;
         private int weight;
-        public int Weight => weight;
+        public int Weight { get { return weight; } set { weight = value; } }
 
-        public Tile(Texture2D tex, int ID)
+        public Tile(Texture2D tex, int ID, int weight)
         {
             this.tex = tex;
-            this.ID = ID;
+            this.id = ID;
             options = new List<Tile>();
         }
 
-        public void AddOption(Tile tile)
-        {
-            options.Add(tile);
-        }
-
-        public List<Tile> ReturnAllNeighbors()
-        {
-
-            return options;
-        }
-
-        public void FindOption(Tile tile)
-        {
-            Color[] srcArray = new Color[tex.Width * tex.Height];
-            Color[] compArray = new Color[tile.Tex.Width * tile.Tex.Height];
-            for(int y  = 0; y < tex.Height; y++)
-            {
-                for(int x = 2; x< tex.Width; x++)
-                {
-
-
-                }
-            }
-
-
-        }
-
-        
+   
         private void Draw(SpriteBatch sB)
         {
             sB.Draw(tex, drawingRec, Color.White);

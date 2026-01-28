@@ -27,16 +27,19 @@ namespace Wavefunction_Collapse
         private int gridSize = 8;
         private int cellsPerRowColumn = 8;
         private Tile[] tileArray;
+        private List<Tile> tiles;
         private List<Cell> cellTestList = new List<Cell>();
         public CollapseManager(Viewport vP)
         {
             this.vP = vP;
             CalcCelllSizeAndGridSize();
             CreateCells();
-            tileArray = WFCRuleSet.ExtractIMGArray(AssetManager.testTex);
-            LoadCellTextures();
+            //tileArray = WFCRuleSet.ExtractIMGList();
+            tiles = WFCRuleSet.ExtractIMGList();
+            //LoadCellTextures();
             PrintCellCount();
-            //LoadAllNeighBors();
+            PrintWeights();
+           
         }
 
         private void CalcCelllSizeAndGridSize()
@@ -45,7 +48,97 @@ namespace Wavefunction_Collapse
             //gridSize = vP.Width / cellSize;
         }
 
+
+
+        private void LoadOneCell(Cell c)
+        {
+            Random rng = new Random();
+            int id = rng.Next(tiles.Count);   // 0 .. tiles.Count-1
+            c.SetTile(tiles[id]);             // eller c.Tex(tiles[id].Tex)
+        }
+
+        private void LoadAllCells()
+        {
+            foreach (Cell c in cells)
+            {
+                LoadOneCell(c);
+            }
+        }
+
+        private void PrintWeights()
+        {
+            foreach(Tile t in tiles)
+            {
+                Debug.WriteLine($"Tile ID:{t.ID} " + $"Tile Weight: {t.Weight}");
+            }
+        }
+
+        private void PrintCellCount()
+        {
+            Debug.WriteLine(cells.Length);
+        }
        
+
+
+        public void Update(GameTime gT)
+        {
+
+         
+           
+  
+        }
+
+       
+        public void Draw(SpriteBatch sB)
+        {
+            DrawCells(sB);
+            if(cellTestList != null)
+            {
+                foreach (Cell cell in cellTestList)
+                {
+                    cell.Draw(sB);
+                }
+            }
+           
+
+        }
+
+        private void DrawCells(SpriteBatch Sb) // Draws all the cells
+        {
+            if (cells != null)
+            {
+                foreach (Cell c in cells) c.Draw(Sb);
+            }
+        }
+        private void CreateCells()
+        {
+            cells = new Cell[gridSize, gridSize];
+            int ID = 0;
+            for (int y = 0; y < cells.GetLength(0); y++)
+            {
+                for (int x = 0; x < cells.GetLength(1); x++)
+                {
+                    //Texture2D tex = TileExtractor.ExtractOneTile(AssetManager.testTex);
+                    Cell c = new Cell(new Rectangle(x * cellSize + gridXOffset, y * cellSize + gridYOffset, cellSize, cellSize), ID, AssetManager.gridTex/*tex*/);
+                    cells[x, y] = c;
+                    ID++;
+                }
+            }
+        }
+        private void LoadCellTextures()
+        {
+            int index = 0;
+            for (int y = 0; y < cells.GetLength(0); y++)
+            {
+                for (int x = 0; x < cells.GetLength(1); x++)
+                {
+
+                    cells[x, y].Tex(tileArray[index].Tex);
+                    index++;
+                }
+            }
+        }
+
 
         private void CheckIfMouseHoverCell() // Gets the Col And Row in the 2D Array, if the tuple returns (-1, -1) return.
         {
@@ -71,100 +164,6 @@ namespace Wavefunction_Collapse
             else return (-1, -1);
 
 
-        }
-
-        public void LoadCellsTextures(/*SpriteBatch sB*/)
-        {
-            Random rnd = new Random();
-            int optionsCount = tileArray[2].Options.Count;
-            List<Tile> tiles = new List<Tile>();
-            tiles = tileArray[2].ReturnAllNeighbors();
-            List<Texture2D> textures = new List<Texture2D>();
-            foreach(Tile t in tiles)
-            {
-                textures.Add(t.Tex);
-            }
-            
-            foreach (Cell c in cells)
-            {
-                c.Tex(textures[rnd.Next(0, textures.Count )]);
-            }
-            Debug.WriteLine( $"Options Count = {optionsCount}");
-            
-           
-
-        }
-
-        private void PrintCellCount()
-        {
-            Debug.WriteLine(cells.Length);
-
-        }
-
-
-        public void Update(GameTime gT)
-        {
-            if(KeyMouseReader.KeyPressed(Keys.Space))
-            LoadCellsTextures();
-           
-           
-        }
-
-        private void LoadCellTextures()
-        {
-            int index = 0;
-            for(int y = 0; y < cells.GetLength(0); y++)
-            {
-                for(int  x = 0; x < cells.GetLength(1); x++)
-                {
-                    
-                    cells[x, y].Tex(tileArray[index].Tex);
-                    index++;
-                }
-            }
-        } 
-
-
-        
-
-
-        public void Draw(SpriteBatch sB)
-        {
-            DrawCells(sB);
-            if(cellTestList != null)
-            {
-                foreach (Cell cell in cellTestList) ;
-            }
-           
-              
-            
-          
-            //cells[4,4].Draw(sB);
-
-        }
-
-        private void DrawCells(SpriteBatch Sb) // Draws all the cells
-        {
-            if (cells != null)
-            {
-                foreach (Cell c in cells) c.Draw(Sb);
-            }
-            
-        }
-        private void CreateCells()
-        {
-            cells = new Cell[gridSize, gridSize];
-            int ID = 0;
-            for (int y = 0; y < cells.GetLength(0); y++)
-            {
-                for (int x = 0; x < cells.GetLength(1); x++)
-                {
-                    //Texture2D tex = TileExtractor.ExtractOneTile(AssetManager.testTex);
-                    Cell c = new Cell(new Rectangle(x * cellSize + gridXOffset, y * cellSize + gridYOffset, cellSize, cellSize), ID, AssetManager.gridTex/*tex*/);
-                    cells[x, y] = c;
-                    ID++;
-                }
-            }
         }
 
     }

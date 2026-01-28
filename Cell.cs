@@ -33,14 +33,17 @@ namespace Wavefunction_Collapse
             sB.Draw(AssetManager.gridTex, bounds, Color.White);
 
         }
-
+        public void SetTile(Tile t)
+        {
+            tex = t.Tex;
+        }
        
 
 
         public void Draw(SpriteBatch sB)
         {
             sB.Draw(tex, bounds, Color.White);
-            //DrawBoundsAndID(sB);
+            DrawBoundsAndID(sB);
         }
 
     }

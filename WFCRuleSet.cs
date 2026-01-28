@@ -10,15 +10,18 @@ using System.IO.IsolatedStorage;
 using System.Diagnostics;
 using System.ComponentModel;
 using System.Security.Policy;
+using SharpDX.Direct3D9;
 
 namespace Wavefunction_Collapse
 {
     public static class WFCRuleSet
     {
+        private static Texture2D texture = AssetManager.testTex;
         private static int nPixel = 4; // Pixel Height and Size in one tile.
         private static int tilePixelsAmounts = nPixel * nPixel;
         private static int tileNumber = 64;
         private static int tileGrid = 8;
+        private static int defaultWeight = 1;
         private static GraphicsDevice graphicsDevice;
         public static Tile[][][] options;
         //public static 
@@ -26,38 +29,33 @@ namespace Wavefunction_Collapse
         public  enum Direction { NORTH = 0, EAST = 1, SOUTH = 2, WEST = 3 }
         public static Direction direction = Direction.NORTH;
         public static GraphicsDevice GP(GraphicsDevice graphDevice) => graphicsDevice = graphDevice;
-        public static Tile[] ExtractIMGArray(Texture2D Texture) // Tar ut hela arrayen av tilse, men sen också var i Texturen "ExtractOneTile" ska kolla.
+        public static List<Tile> ExtractIMGList() // Tar ut hela arrayen av tilse, men sen också var i Texturen "ExtractOneTile" ska kolla.
         {
-            Texture2D tex = Texture;
+
             List<Tile> tiles = new List<Tile>();
-            Tile[] tileArray;
-            Color[] sourcePixels = new Color[Texture.Width * Texture.Height];
-            tex.GetData(sourcePixels);
+            //Tile[] tileArray;
+            Color[] sourcePixels = new Color[texture.Width * texture.Height];
+            texture.GetData(sourcePixels);
             int index = 0;
             int xMulti = 0;
             int yMulti = 0;
             int stride = 2; // Overlap variabeln som används för att wrapa runt när man extraherar tiles, för fler alternative 
                             // Ju lägre värde, desto mer overlap; == Fler tiles, 
-            for (int y = 0; y < tex.Height; y+=stride)
+            for (int y = 0; y < texture.Height; y+=stride)
             {
-                for (int x = 0; x < tex.Width; x+=stride)
+                for (int x = 0; x < texture.Width; x+=stride)
                 {
                     xMulti = x* nPixel;
                     yMulti = y* nPixel;
-                    tiles.Add(ExtractOneTile(tex, sourcePixels,xMulti, yMulti, index));
+                    tiles.Add(ExtractOneTile(sourcePixels,xMulti, yMulti, index));
                     index++;
                 }
             }
-            tileArray = new Tile[tiles.Count];
-            for(int i = 0; i < tiles.Count; i++)
-            {
-                tileArray[i] = tiles[i];
-            }
-            Debug.WriteLine(tileArray.Length);
-            return tileArray;
+            Debug.WriteLine($"Original Tile Count{tiles.Count}");
+            return DeDuplicateTiles(tiles);
         }
 
-        public static Tile ExtractOneTile(Texture2D Texture, Color[]sourcePixels ,int multiX, int multiY, int ID) // Tar ut en Tile som är nPixel * nPixel stor. 
+        public static Tile ExtractOneTile(Color[]sourcePixels ,int multiX, int multiY, int ID) // Tar ut en Tile som är nPixel * nPixel stor. 
         {
           
             Color[] tilePixels = new Color[tilePixelsAmounts];
@@ -67,29 +65,49 @@ namespace Wavefunction_Collapse
                 for(int x = 0; x < nPixel; x++)
                 {
                     int tileIndex = x + y * nPixel;
-                    int sx =(multiX + x) % Texture.Width;
-                    int sy = (multiY + y) % Texture.Height;
-                    int sourceIndex = sx + sy * Texture.Width;
+                    int sx =(multiX + x) % texture.Width;
+                    int sy = (multiY + y) % texture.Height;
+                    int sourceIndex = sx + sy * texture.Width;
 
                     tilePixels[tileIndex] = sourcePixels[sourceIndex];
                 }
             }
             Texture2D tex = new Texture2D(graphicsDevice, nPixel, nPixel);
             tex.SetData(tilePixels);
-            Tile tile = new Tile(tex, ID);
+            Tile tile = new Tile(tex, ID, defaultWeight);
             return tile;
         }
 
-        private void RemoveDupesAndAddWeight()
+        private static List<Tile> DeDuplicateTiles(List<Tile> tiles )
         {
+            Dictionary<string, int> dict = new Dictionary<string, int>();
+            List<Tile> unique = new List<Tile>();
 
+            foreach (Tile t in tiles)
+            {
+                Color[] colors = new Color[nPixel * nPixel];
+                t.Tex.GetData(colors);
 
+                StringBuilder sb = new StringBuilder(colors.Length * 11);
+                for (int i = 0; i < colors.Length; i++)
+                    sb.Append(colors[i].PackedValue).Append(',');
 
+                string key = sb.ToString();
 
+                if (dict.TryGetValue(key, out int idx))
+                {
+                    unique[idx].Weight += 1;
+                }
+                else
+                {
+                    Tile newTile = new Tile(t.Tex, unique.Count, 1);
+                    newTile.Weight = 1;
+                    dict[key] = unique.Count;
+                    unique.Add(newTile);
+                }
+            }
+            return unique;
         }
-
-        
-
 
         public static bool CheckIfTileIsOption(Tile sourceTile, Tile comparisonTile)
         {
