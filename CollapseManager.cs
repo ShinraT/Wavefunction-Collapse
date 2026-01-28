@@ -53,8 +53,8 @@ namespace Wavefunction_Collapse
         private void LoadOneCell(Cell c)
         {
             Random rng = new Random();
-            int id = rng.Next(tiles.Count);   // 0 .. tiles.Count-1
-            c.SetTile(tiles[id]);             // eller c.Tex(tiles[id].Tex)
+            int id = rng.Next(tiles.Count);  
+            c.SetTile(tiles[id]);            
         }
 
         private void LoadAllCells()
